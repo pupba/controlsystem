@@ -1,0 +1,258 @@
+{% load django_bootstrap5 %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>통합관제 시스템</title>
+        {% bootstrap_css %} {% bootstrap_javascript %}
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="{% static 'css/main.css'%}"
+        />
+    </head>
+    <body>
+        <div class="row">
+            <!-- 사이드바 -->
+            <div class="col-md-2 sidebar overflow-auto shadow">
+                <!-- 사이드바 내용 -->
+                <div class="container-fluid">
+                    <a href="/list/" class="btn btn-outline-danger logout-btn"
+                        >뒤로가기</a
+                    >
+                </div>
+                <div class="col">
+                    <div class="col-12 sector-1 shadow">
+                        <div class="p-3 bg-light text-dark text-center fs-4">
+                            운항상태
+                        </div>
+                        <div class="p-2 bg-light text-dark fs-5 mb-3">
+                            <p>선박명 : <b class="text-dark">{{ name }}</b></p>
+                            <p>
+                                연결상태 : {% if status == "정상" %}
+                                <b class="text-success">{{ status }} </b>
+                                {% else %}
+                                <b class="text-danger">{{ status }}</b>
+                                {%endif%}
+                            </p>
+                            <p>현재 속도 : {{ speed }}kn</p>
+                            <p>현재 방향(COG) : {{ cog }}</p>
+                            <p>현재 해역 : {{location}}</p>
+                        </div>
+                    </div>
+                    <div class="col-12 sector-2 shadow">
+                        <div class="p-3 bg-light text-dark text-center fs-4">
+                            대응 단계 확인 및 제어
+                        </div>
+                        <div class="p-2 bg-light text-dark fs-5 mb-3">
+                            <div
+                                class="m-2 d-flex justify-content align-items-center"
+                            >
+                                {% if mode == 0 %}
+                                <p
+                                    style="display: inline-block"
+                                    class="text-success"
+                                >
+                                    돌고래 0 단계
+                                </p>
+                                {% elif mode == 1 %}
+                                <p
+                                    style="display: inline-block"
+                                    class="text-warning"
+                                >
+                                    돌고래 1 단계
+                                </p>
+                                {% else %}
+                                <p
+                                    style="display: inline-block"
+                                    class="text-danger"
+                                >
+                                    돌고래 2 단계
+                                </p>
+                                {% endif %}
+                                <form
+                                    style="display: inline-block"
+                                    method="post"
+                                    action="/change/"
+                                >
+                                    {% csrf_token %}
+                                    <input
+                                        class="m-2 btn btn-danger inline"
+                                        value="단계변경"
+                                        type="submit"
+                                        name="{{ name }}"
+                                    />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 sector-3 shadow">
+                        <div class="p-3 bg-light text-dark text-center fs-4">
+                            테러 대응 제어
+                        </div>
+                        <div class="p-2 bg-light text-dark fs-5 mb-3">
+                            <div class="m-2">
+                                SSAS
+                                <form
+                                    style="display: inline-block"
+                                    method="post"
+                                    action="/manualcontrol/"
+                                >
+                                    {% csrf_token %} {% if ssas %}
+                                    <input
+                                        class="m-2 btn btn-success inline"
+                                        value="ON"
+                                        type="submit"
+                                        name="{{ name }} ssas"
+                                    />
+                                    {% else %}
+                                    <input
+                                        class="m-2 btn btn-secondary inline"
+                                        value="OFF"
+                                        type="submit"
+                                        name="{{ name }} ssas"
+                                    />
+                                    {% endif %}
+                                </form>
+                            </div>
+                            <div class="m-2">
+                                기적장치
+                                <form
+                                    style="display: inline-block"
+                                    method="post"
+                                    action="/manualcontrol/"
+                                >
+                                    {% csrf_token %} {% if sound %}
+                                    <input
+                                        class="m-2 btn btn-success inline"
+                                        value="ON"
+                                        type="submit"
+                                        name="{{ name }} speaker"
+                                    />
+                                    {% else %}
+                                    <input
+                                        class="m-2 btn btn-secondary inline"
+                                        value="OFF"
+                                        type="submit"
+                                        name="{{ name }} speaker"
+                                    />
+                                    {% endif %}
+                                </form>
+                            </div>
+                            <div class="m-2">
+                                Electronic Blow
+                                <form
+                                    style="display: inline-block"
+                                    method="post"
+                                    action="/manualcontrol/"
+                                >
+                                    {% csrf_token %} {% if EB %}
+                                    <input
+                                        class="m-2 btn btn-success inline"
+                                        value="ON"
+                                        type="submit"
+                                        name="{{ name }} eb"
+                                    />
+                                    {% else %}
+                                    <input
+                                        class="m-2 btn btn-secondary inline"
+                                        value="OFF"
+                                        type="submit"
+                                        name="{{ name }} eb"
+                                    />
+                                    {% endif %}
+                                </form>
+                            </div>
+                            <div class="m-2">
+                                AIS
+                                <form
+                                    style="display: inline-block"
+                                    method="post"
+                                    action="/manualcontrol/"
+                                >
+                                    {% csrf_token %} {% if ais %}
+                                    <input
+                                        class="m-2 btn btn-success inline"
+                                        value="ON"
+                                        type="submit"
+                                        name="{{ name }} ais"
+                                    />
+                                    {% else %}
+                                    <input
+                                        class="m-2 btn btn-secondary inline"
+                                        value="OFF"
+                                        type="submit"
+                                        name="{{ name }} ais"
+                                    />
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 sector-4 shadow">
+                        <div class="p-3 bg-light text-dark text-center fs-4">
+                            <form method="post" action="/getpirate/">
+                                {% csrf_token %} 해적정보<input
+                                    class="m-2 btn btn-outline-danger inline"
+                                    value="갱신"
+                                    type="submit"
+                                    name="{{ name }}"
+                                />
+                            </form>
+                        </div>
+                        <table class="table text-center">
+                            <thead>
+                                <tr>
+                                    <th scope="col">번호</th>
+                                    <th scope="col">구역</th>
+                                    <th scope="col">날짜</th>
+                                    <th scope="col">공격 유형</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in pirate %}
+                                <tr>
+                                    <td scope="row">{{ data.0 }}</td>
+                                    <td scope="row">{{ data.1 }}</td>
+                                    <td scope="row">{{ data.2 }}</td>
+                                    <td scope="row">{{ data.3 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-12 sector-5 shadow">
+                        <div class="p-3 bg-light text-dark text-center fs-4">
+                            레이더
+                        </div>
+                        <img
+                            id="realtime-radar"
+                            src="https://thumbs.gfycat.com/BlushingJubilantImperialeagle-size_restricted.gif"
+                            class="w-100 p-1 rounded-5"
+                        />
+                    </div>
+                </div>
+            </div>
+            <!-- 전면 cam -->
+            <div class="col-md-9 col-lg-10 video-container shadow">
+                <img
+                    id="video-img"
+                    src="{% static 'img/danger.png' %}"
+                    class="img-fluid img-thumbnail"
+                />
+            </div>
+        </div>
+        <!--레이더 자동화-->
+        <!-- <script>
+            setInterval(function () {
+                var img = document.getElementById("realtime-radar");
+                img.src =
+                    이미지 URL
+                    "" +
+                    new Date().getTime();
+            }, 1000);
+        </script> -->
+    </body>
+</html>

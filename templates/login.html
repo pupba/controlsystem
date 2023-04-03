@@ -1,0 +1,74 @@
+{% load static %} {% load django_bootstrap5 %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>통합관제 시스템</title>
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="{% static 'css/login.css'%}"
+        />
+        {% bootstrap_css %} {% bootstrap_javascript %}
+    </head>
+    <body>
+        {% if messages %}
+        <div class="position-absolute top-0 end-0 p-3">
+            {% for message in messages %}
+            <div
+                class="alert alert-{{ message.tags }} alert-dismissible notification-container text-center"
+            >
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"
+                ></button>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <section id="main-container">
+            <img
+                id="title-img"
+                src="{% static 'img/title.gif' %}"
+                alt="타이틀"
+            />
+            <form method="post" action="/login/">
+                {% csrf_token %}
+                <table id="main-table">
+                    <tr>
+                        <th>ID</th>
+                        <td><input class="inputs" type="text" name="ID" /></td>
+                    </tr>
+                    <tr>
+                        <th>pw</th>
+                        <td>
+                            <input class="inputs" type="password" name="PW" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <label for="login-btn">
+                                <img
+                                    id="login-img"
+                                    src="{% static 'img/login.png' %}"
+                                    alt="로그인"
+                                />
+                            </label>
+                            <input
+                                id="login-btn"
+                                type="submit"
+                                value="로그인"
+                            />
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </section>
+    </body>
+</html>

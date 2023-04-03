@@ -1,0 +1,94 @@
+{% load django_bootstrap5 %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>통합관제 시스템</title>
+        {% bootstrap_css %} {% bootstrap_javascript %}
+    </head>
+    <body>
+        <div class="container mt-3">
+            <!-- 메세지 -->
+            {% if messages %}
+            <div id="msg" class="position-absolute top-0 end-0 p-3">
+                {% for message in messages %}
+                <div
+                    class="alert alert-{{ message.tags }} alert-dismissible notification-container text-center"
+                >
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close"
+                    ></button>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <!-- 타이틀 -->
+            <h1 class="text-center">선박 현황</h1>
+
+            <!-- 로그아웃 버튼 -->
+            </button>
+            <a
+                href="/login/"
+                class="btn btn-primary position-absolute top-0 start-0 m-3"
+                >로그아웃</a
+            >
+
+            <!-- 테이블 -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">선박명</th>
+                        <th scope="col">연결상태</th>
+                        <th scope="col">단계</th>
+                        <th scope="col">속도</th>
+                        <th scope="col">방향</th>
+                        <th scope="col">해역</th>
+                        <th scope="col">관제</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for info in shiplist %}
+                    <tr>
+                        <td>{{info.shipname}}</td>
+                        <td>
+                            {% if info.connect %}
+                            <p class="text-success">"정상"</p>
+                            {% else %}
+                            <p class="text-danger">"연결 끊킴"</p>
+                            {% endif %}
+                            </td>
+                        <td>
+                            {% if info.stage == 0 %}
+                            <p class="text-success">돌고래 0단계</p>
+                            {% elif info.stage == 1 %}
+                            <p class="text-warning">돌고래 1단계</p>
+                            {% else %}
+                            <p class="text-danger">돌고래 2단계</p>
+                            {% endif %}
+                        </td>
+                        <td>{{info.sog}}kn</td>
+                        <td>{{info.cog}}</td>
+                        <td>{{info.gps}}</td>
+                        <td>
+                            <form method="post" action="/main/">
+                                {% csrf_token %}<input
+                                    class="m-2 btn btn-outline-success inline"
+                                    value="관제"
+                                    type="submit"
+                                    name="{{ info.shipname }}"
+                                />
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>
