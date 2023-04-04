@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.contrib.auth.hashers import check_password
 from apps.moduleprocessing.models import Operator,ShipInfo,DangerMessages
 from django.contrib import messages
+from apps.moduleprocessing.modules.pirate import PirateDataCrawler
 
-import requests
+pdc = PirateDataCrawler()
 
 # 로그인 페이지
 def login(request):
@@ -36,7 +37,7 @@ def mainPage(request):
         name = list(request.POST.keys())[1]
         # mysql에서 현재 상태 가져오기
         data = ShipInfo.objects.get(shipname=name)
-        testvalue = [(1,'Brazil','2023-02-28','Boarded'),(2,'Brazil','2023-02-28','Boarded')]
+        testvalue = pdc.getPirateData(data.gps)
         context={"pirate":testvalue,
                  "name":name,
                  "status": "정상" if data.connect else "연결끊킴",
@@ -53,7 +54,7 @@ def mainPage(request):
 # 수동 단계 변경
 def changeLevel(request):
     # 기본 정보
-    testvalue = [(1,'Brazil','2023-02-28','Boarded'),(2,'Brazil','2023-02-28','Boarded')]
+    testvalue = testvalue = pdc.getPirateData(data.gps)
     if request.method == "POST":
         # 선박정보 가져오기
         name = list(request.POST.keys())[1]
@@ -67,7 +68,12 @@ def changeLevel(request):
             data.save()
         elif data.stage == 1: # 1단계
             data.stage = 2
+
             data.ssas = 1
+            # ssas ON 신고
+            emergencyMSG = DangerMessages(name=name,location=data.gps,kind="해적 공격",etc="위험")
+            emergencyMSG.save()
+            #
             data.speaker = 1
             data.eb = 1
             data.ais = 0
@@ -94,11 +100,10 @@ def changeLevel(request):
 
 # 해적 정보 갱신(크롤링 모듈 적용 필요)
 def getPirateData(request):
-    testvalue = [(1,'Brazil','2023-02-28','Boarded'),(2,'Brazil','2023-02-28','Boarded'),(3,'Brazil','2023-03-01','Boarded')]
     if request.method == 'POST':
         name = list(request.POST.keys())[1]
         data = ShipInfo.objects.get(shipname=name)
-        context={'pirate':testvalue,
+        context={'pirate':pdc.getPirateData(data.gps),
                  "name":name,
                  "status": "정상" if data.connect else "연결끊킴",
                  "speed":data.sog,
@@ -156,7 +161,7 @@ def manualControl(request):
             else :
                 data.ais = 1
                 data.save()
-    testvalue = [(1,'Brazil','2023-02-28','Boarded'),(2,'Brazil','2023-02-28','Boarded'),(3,'Brazil','2023-03-01','Boarded')]
+    testvalue = testvalue = pdc.getPirateData(data.gps)
     context={'pirate':testvalue,
                  "name":sn,
                  "status": "정상" if data.connect else "연결끊킴",
