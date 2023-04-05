@@ -53,12 +53,12 @@ def mainPage(request):
 
 # 수동 단계 변경
 def changeLevel(request):
-    # 기본 정보
-    testvalue = testvalue = pdc.getPirateData(data.gps)
     if request.method == "POST":
         # 선박정보 가져오기
         name = list(request.POST.keys())[1]
         data = ShipInfo.objects.get(shipname=name)
+        # 기본 정보
+        testvalue = testvalue = pdc.getPirateData(data.gps)
         if data.stage == 0: # 0단계
             data.stage = 1
             data.ssas = 0
