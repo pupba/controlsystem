@@ -5,7 +5,7 @@
 ## 개발환경
 
 -   언어: Python(3.9v), HTML, CSS, Javascript
--   라이브러리: Django(4.1v), django-bootstrap5, channels, daphne
+-   라이브러리: Django(4.1v), django-bootstrap5, channels, daphne, selenium, BeautifulSoup, requests
 -   데이터베이스: MySQL
 
 ## 기능
