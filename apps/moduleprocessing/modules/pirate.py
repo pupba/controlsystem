@@ -53,7 +53,7 @@ class PirateDataCrawler:
             sea = [i.text for i in soup.find_all('td', class_='seawhere')]
             title = [tuple(i.text.split(' ')) for i in soup.find_all('td', class_='title')]
 
-            data = [(s,t[0],t[1]) for s,t in zip(sea,title)]
+            data = [(idx+1,s,t[0],t[1]) for idx,(s,t) in enumerate(zip(sea,title))]
             
 
             # 값 반환
