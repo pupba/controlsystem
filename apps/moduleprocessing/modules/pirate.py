@@ -2,7 +2,7 @@ from selenium.webdriver.support.ui import Select
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from selenium import webdriver
-
+from selenium.common.exceptions import TimeoutException,WebDriverException
 from django.conf import settings
 import os
 
@@ -25,39 +25,43 @@ class PirateDataCrawler:
     def getPirateData(self,countryName):
         # 드라이버로 페이지 열기
         url = 'https://www.gicoms.go.kr/pirate/pirate_07.do'
-        self.__driver.get(url)
+        try:
+            self.__driver.get(url)
 
-        # "구역" select 태그 선택
-        select_zone = Select(self.__driver.find_element(By.NAME,'srcActSeaArea'))
-        # "구역" select 태그에서 "현재 해역" 선택
+            # "구역" select 태그 선택
+            select_zone = Select(self.__driver.find_element(By.NAME,'srcActSeaArea'))
+            # "구역" select 태그에서 "현재 해역" 선택
 
-        if countryName in self.__country.keys():
-            value = self.__country[countryName]
+            if countryName in self.__country.keys():
+                value = self.__country[countryName]
 
-            select_zone.select_by_value(value)
-            # "1주일" radio 버튼 선택
-            buttons = self.__driver.find_elements(By.CSS_SELECTOR,'.inline_btn_group.recentlybtns > button')
-            buttons[0].click() # 첫번째 버튼 클릭
+                select_zone.select_by_value(value)
+                # "1주일" radio 버튼 선택
+                buttons = self.__driver.find_elements(By.CSS_SELECTOR,'.inline_btn_group.recentlybtns > button')
+                buttons[0].click() # 첫번째 버튼 클릭
 
-            #"조회" 버튼 클릭
-            self.__driver.find_element(By.CSS_SELECTOR,'.form_footer.search_confirm > button').click()
+                #"조회" 버튼 클릭
+                self.__driver.find_element(By.CSS_SELECTOR,'.form_footer.search_confirm > button').click()
 
-            # 데이터 로딩 대기
-            self.__driver.implicitly_wait(5)
+                # 데이터 로딩 대기
+                self.__driver.implicitly_wait(2)
 
-            # HTML 추출
-            html = self.__driver.page_source
-            soup = BeautifulSoup(html, 'html.parser')
+                # HTML 추출
+                html = self.__driver.page_source
+                soup = BeautifulSoup(html, 'html.parser')
 
-            # td 추출
-            sea = [i.text for i in soup.find_all('td', class_='seawhere')]
-            title = [tuple(i.text.split(' ')) for i in soup.find_all('td', class_='title')]
+                # td 추출
+                sea = [i.text for i in soup.find_all('td', class_='seawhere')]
+                title = [tuple(i.text.split(' ')) for i in soup.find_all('td', class_='title')]
 
-            data = [(s,t[0],t[1]) for s,t in zip(sea,title)]
+                data = [(idx+1,s,t[0],t[1]) for idx,(s,t) in enumerate(zip(sea,title))]
             
-
             # 값 반환
             return data
+        except TimeoutException as te:
+            print("시간 초과")
+        except WebDriverException as we:
+            print("웹 드라이버 오류")
             
         # 셀레니움 드라이버 종료
         # self.__driver.quit()

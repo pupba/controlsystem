@@ -58,7 +58,7 @@ def changeLevel(request):
         name = list(request.POST.keys())[1]
         data = ShipInfo.objects.get(shipname=name)
         # 기본 정보
-        testvalue = testvalue = pdc.getPirateData(data.gps)
+        testvalue = pdc.getPirateData(data.gps)
         if data.stage == 0: # 0단계
             data.stage = 1
             data.ssas = 0
@@ -161,7 +161,7 @@ def manualControl(request):
             else :
                 data.ais = 1
                 data.save()
-    testvalue = testvalue = pdc.getPirateData(data.gps)
+    testvalue =  pdc.getPirateData(data.gps)
     context={'pirate':testvalue,
                  "name":sn,
                  "status": "정상" if data.connect else "연결끊킴",
