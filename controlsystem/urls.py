@@ -8,10 +8,10 @@ from apps.moduleprocessing.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/',login),
-    path('list/',listPage),
-    path('main/',mainPage),
-    path('change/',changeLevel),
-    path('getpirate/',getPirateData),
-    path('manualcontrol/',manualControl),
-    path('test/',tmp),
+    path('ship-list/',listPage),
+    path('main-monitor/',mainPage),
+    path('anti-terror-phase-control/',changeLevel),
+    path('pirate-info/',getPirateData),
+    path('anti-terror-control/',manualControl),
+    path('ocean-report/',tmp),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
