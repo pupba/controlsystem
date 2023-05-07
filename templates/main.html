@@ -19,7 +19,9 @@
             <div class="col-md-2 sidebar overflow-auto shadow">
                 <!-- 사이드바 내용 -->
                 <div class="container-fluid">
-                    <a href="/list/" class="btn btn-outline-danger logout-btn"
+                    <a
+                        href="/ship-list/"
+                        class="btn btn-outline-danger logout-btn"
                         >뒤로가기</a
                     >
                 </div>
@@ -75,7 +77,7 @@
                                 <form
                                     style="display: inline-block"
                                     method="post"
-                                    action="/change/"
+                                    action="/anti-terror-phase-control/"
                                 >
                                     {% csrf_token %}
                                     <input
@@ -98,7 +100,7 @@
                                 <form
                                     style="display: inline-block"
                                     method="post"
-                                    action="/manualcontrol/"
+                                    action="/anti-terror-control/"
                                 >
                                     {% csrf_token %} {% if ssas %}
                                     <input
@@ -122,7 +124,7 @@
                                 <form
                                     style="display: inline-block"
                                     method="post"
-                                    action="/manualcontrol/"
+                                    action="/anti-terror-control/"
                                 >
                                     {% csrf_token %} {% if sound %}
                                     <input
@@ -146,7 +148,7 @@
                                 <form
                                     style="display: inline-block"
                                     method="post"
-                                    action="/manualcontrol/"
+                                    action="/anti-terror-control/"
                                 >
                                     {% csrf_token %} {% if EB %}
                                     <input
@@ -170,7 +172,7 @@
                                 <form
                                     style="display: inline-block"
                                     method="post"
-                                    action="/manualcontrol/"
+                                    action="/anti-terror-control/"
                                 >
                                     {% csrf_token %} {% if ais %}
                                     <input
@@ -193,7 +195,7 @@
                     </div>
                     <div class="col-12 sector-4 shadow">
                         <div class="p-3 bg-light text-dark text-center fs-4">
-                            <form method="post" action="/getpirate/">
+                            <form method="post" action="/pirate-info/">
                                 {% csrf_token %} 해적정보<input
                                     class="m-2 btn btn-outline-danger inline"
                                     value="갱신"
@@ -229,7 +231,8 @@
                         </div>
                         <img
                             id="realtime-radar"
-                            src="https://thumbs.gfycat.com/BlushingJubilantImperialeagle-size_restricted.gif"
+                            src=""
+                            alt="미구현 레이더가 들어갈 자리"
                             class="w-100 p-1 rounded-5"
                         />
                     </div>
@@ -237,11 +240,7 @@
             </div>
             <!-- 전면 cam -->
             <div class="col-md-9 col-lg-10 video-container shadow">
-                <img
-                    id="video-img"
-                    src="{% static 'img/danger.png' %}"
-                    class="img-fluid img-thumbnail"
-                />
+                <h1>미구현 : 영상이 들어갈 자리</h1>
             </div>
         </div>
         <!--레이더 자동화-->

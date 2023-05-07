@@ -29,7 +29,7 @@
             </div>
             {% endif %}
             <!-- 타이틀 -->
-            <h1 class="text-center">선박 현황</h1>
+            <h1 class="text-center">관제 선박 현황</h1>
 
             <!-- 로그아웃 버튼 -->
             </button>
@@ -76,7 +76,7 @@
                         <td>{{info.cog}}</td>
                         <td>{{info.gps}}</td>
                         <td>
-                            <form method="post" action="/main/">
+                            <form method="post" action="/main-monitor/">
                                 {% csrf_token %}<input
                                     class="m-2 btn btn-outline-success inline"
                                     value="관제"
