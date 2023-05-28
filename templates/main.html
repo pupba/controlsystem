@@ -14,6 +14,24 @@
         />
     </head>
     <body>
+        <!-- 메세지 -->
+        {% if messages %}
+        <div id="msg" class="position-absolute top-0 end-0 p-3">
+            {% for message in messages %}
+            <div
+                class="alert alert-{{ message.tags }} alert-dismissible notification-container text-center"
+            >
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"
+                ></button>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         <div class="row">
             <!-- 사이드바 -->
             <div class="col-md-2 sidebar overflow-auto shadow">
@@ -231,7 +249,7 @@
                         </div>
                         <img
                             id="realtime-radar"
-                            src=""
+                            src="http://127.0.0.1:5050/ladar"
                             alt="미구현 레이더가 들어갈 자리"
                             class="w-100 p-1 rounded-5"
                         />
@@ -240,18 +258,12 @@
             </div>
             <!-- 전면 cam -->
             <div class="col-md-9 col-lg-10 video-container shadow">
-                <img id="video-img" src="http://127.0.0.1:5000/video_feed" />
+                <img
+                    id="video-img"
+                    src="http://127.0.0.1:5050/video_feed"
+                    alt="연결끊킴"
+                />
             </div>
         </div>
-        <!--레이더 자동화-->
-        <!-- <script>
-            setInterval(function () {
-                var img = document.getElementById("realtime-radar");
-                img.src =
-                    이미지 URL
-                    "" +
-                    new Date().getTime();
-            }, 1000);
-        </script> -->
     </body>
 </html>

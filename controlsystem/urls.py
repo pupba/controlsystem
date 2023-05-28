@@ -9,7 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/',login),
     path('ship-list/',listPage),
-    path('main-monitor/',mainPage),
+    path('main-monitor/',mainPage,name='main-monitor'),
     path('anti-terror-phase-control/',changeLevel),
     path('pirate-info/',getPirateData),
     path('anti-terror-control/',manualControl),

@@ -1,8 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.contrib.auth.hashers import check_password
 from apps.moduleprocessing.models import Operator,ShipInfo,DangerMessages
 from django.contrib import messages
 from apps.moduleprocessing.modules.pirate import PirateDataCrawler
+import requests
+import json
+from datetime import datetime
 
 pdc = PirateDataCrawler()
 
@@ -30,35 +33,47 @@ def listPage(request):
     context = {"shiplist":shiplist}
     return render(request,"shiplist.html",context)
 
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
 # 메인 페이지
 def mainPage(request):
+    testvalue = None
     if request.method == "POST":
         # 관제할 선박 이름
         name = list(request.POST.keys())[1]
+
         # mysql에서 현재 상태 가져오기
         data = ShipInfo.objects.get(shipname=name)
         testvalue = pdc.getPirateData(data.gps)
-        context={"pirate":testvalue,
-                 "name":name,
-                 "status": "정상" if data.connect else "연결끊킴",
-                 "speed":data.sog,
-                 "cog":data.cog,
-                 "location":data.gps,
-                 "mode":data.stage,
-                 "ais":data.ais,
-                 "ssas":data.ssas,
-                 "sound":data.speaker,
-                 "EB":data.eb}
-    return render(request,"main.html",context)
-
+        if data.stage == 2:
+            messages.error(request,"돌고래 2단계")
+        context={
+            "pirate":testvalue,
+            "name":name,
+            "status": "정상" if data.connect else "연결끊킴",
+            "speed":data.sog,
+            "cog":data.cog,
+            "location":data.gps,
+            "mode":data.stage,
+            "ais":data.ais,
+            "ssas":data.ssas,
+            "sound":data.speaker,
+            "EB":data.eb,
+        }
+        return render(request, "main.html", context)
+    else:
+        print(f'GET : {context}')
+        return render(request, "main.html", context)
 # 수동 단계 변경
 def changeLevel(request):
+    testvalue = None
     if request.method == "POST":
         # 선박정보 가져오기
         name = list(request.POST.keys())[1]
         data = ShipInfo.objects.get(shipname=name)
         # 기본 정보
         testvalue = pdc.getPirateData(data.gps)
+        stage = 0
         if data.stage == 0: # 0단계
             data.stage = 1
             data.ssas = 0
@@ -66,18 +81,20 @@ def changeLevel(request):
             data.eb = 0
             data.ais = 0
             data.save()
+            stage = 'warring'
         elif data.stage == 1: # 1단계
             data.stage = 2
-
             data.ssas = 1
             # ssas ON 신고
-            emergencyMSG = DangerMessages(name=name,location=data.gps,kind="해적 공격",etc="위험")
+            emergencyMSG = DangerMessages(time=datetime.now(),name=name,location=data.gps,kind="해적 공격",etc="위험")
             emergencyMSG.save()
             #
             data.speaker = 1
             data.eb = 1
             data.ais = 0
             data.save()
+            stage = 'danger'
+            messages.error(request,"돌고래 2단계")
         else : # 2단계
             data.stage = 0
             data.ssas = 0
@@ -85,17 +102,21 @@ def changeLevel(request):
             data.eb = 0
             data.ais = 1
             data.save()
+            stage = 'safe'
     context={"pirate":testvalue,
-                 "name":name,
-                 "status": "정상" if data.connect else "연결끊킴",
-                 "speed":data.sog,
-                 "cog":data.cog,
-                 "location":data.gps,
-                 "mode":data.stage,
-                 "ais":data.ais,
-                 "ssas":data.ssas,
-                 "sound":data.speaker,
-                 "EB":data.eb}
+                    "name":name,
+                    "status": "정상" if data.connect else "연결끊킴",
+                    "speed":data.sog,
+                    "cog":data.cog,
+                    "location":data.gps,
+                    "mode":data.stage,
+                    "ais":data.ais,
+                    "ssas":data.ssas,
+                    "sound":data.speaker,
+                    "EB":data.eb}
+    # 선박 시스템에 대응 단계 변경 전달
+    data = json.dumps({'status':stage})
+    requests.post('http://localhost:5050/control',json = data,headers = {'Content-Type': 'application/json'})
     return render(request,"main.html",context)
 
 # 해적 정보 갱신(크롤링 모듈 적용 필요)
@@ -135,8 +156,7 @@ def manualControl(request):
                 # 선박의 위치 정보(GPS 좌표, 위치명 등)
                 # 긴급 상황의 종류(해적, 납치, 기타 긴급 상황 등)
                 # 상황에 대한 추가 정보(상황 설명, 현재 상태 등)
-                # sendData = {'name':sn,"location":data.gps,"kind":"pirate","etc":"위험"}
-                emergencyMSG = DangerMessages(name=sn,location=data.gps,kind="해적 공격",etc="위험")
+                emergencyMSG = DangerMessages(time=datetime.now(),name=sn,location=data.gps,kind="해적 공격",etc="위험")
                 emergencyMSG.save()
                 """---------------------------"""
                 data.save()
@@ -173,6 +193,9 @@ def manualControl(request):
                  "ssas":data.ssas,
                  "sound":data.speaker,
                  'EB':data.eb}
+    # 선박 시스템에 대응 단계 변경 전달
+    data = json.dumps({'status':-1})
+    requests.post('http://localhost:5050/control',json = data,headers = {'Content-Type': 'application/json'})
     return render(request, "main.html",context)
 
 
