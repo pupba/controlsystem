@@ -29,8 +29,9 @@ class ShipInfo(models.Model):
     speaker = models.BooleanField(max_length=100)
     # Electroblow
     eb = models.BooleanField(max_length=100)
-
+from datetime import datetime
 class DangerMessages(models.Model):
+    time = models.DateTimeField(default=datetime.now(),max_length=100)
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
     kind = models.CharField(max_length=100)
